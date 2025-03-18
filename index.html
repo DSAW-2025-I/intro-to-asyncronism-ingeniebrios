@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PokeCards</title>
+  <!-- Tailwind CSS desde CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Archivo de estilos personalizados -->
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body class="bg-gray-100 m-0 relative">
+  <!-- Encabezado superior -->
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <div class="flex items-center">
+      <button onclick="toggleSidebar()" class="mr-4 text-2xl focus:outline-none">☰</button>
+      <span class="font-bold">Menu Principal</span>
+    </div>
+    <h1 class="text-2xl font-bold">PokeCards</h1>
+    <div class="flex items-center space-x-4">
+      <input type="text" placeholder="Buscar..." id="searchInput" class="border border-gray-300 rounded px-2 py-1 w-64" />
+      <select id="sortSelect" class="border border-gray-300 rounded px-2 py-1">
+        <option value="">Ordenar por</option>
+        <option value="name">Nombre</option>
+        <option value="type">Tipo</option>
+      </select>
+    </div>
+  </header>
+
+  <!-- Contenido principal -->
+  <main class="p-4">
+    <div id="pokemonGrid" class="grid grid-cols-4 gap-4 max-w-screen-xl mx-auto"></div>
+    <div class="flex justify-center mt-4">
+      <button id="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded">Cargar más</button>
+    </div>
+  </main>
+
+  <!-- Sidebar -->
+  <aside id="sidebar" class="fixed top-0 left-0 w-80 h-full bg-gray-300 p-4 hidden z-50 overflow-y-auto">
+    <button onclick="toggleSidebar()" class="text-2xl mb-4 focus:outline-none">&times;</button>
+    <h2 class="text-xl font-bold mb-4">Elementos</h2>
+    <div class="grid grid-cols-3 gap-4 mb-6">
+      <div class="icon bug"><img src="img/icons/bug.svg" alt="Bug" title="Bug" /></div>
+      <div class="icon dark"><img src="img/icons/dark.svg" alt="Dark" title="Dark" /></div>
+      <div class="icon dragon"><img src="img/icons/dragon.svg" alt="Dragon" title="Dragon" /></div>
+      <div class="icon electric"><img src="img/icons/electric.svg" alt="Electric" title="Electric" /></div>
+      <div class="icon fairy"><img src="img/icons/fairy.svg" alt="Fairy" title="Fairy" /></div>
+      <div class="icon fighting"><img src="img/icons/fighting.svg" alt="Fighting" title="Fighting" /></div>
+      <div class="icon fire"><img src="img/icons/fire.svg" alt="Fire" title="Fire" /></div>
+      <div class="icon flying"><img src="img/icons/flying.svg" alt="Flying" title="Flying" /></div>
+      <div class="icon ghost"><img src="img/icons/ghost.svg" alt="Ghost" title="Ghost" /></div>
+      <div class="icon grass"><img src="img/icons/grass.svg" alt="Grass" title="Grass" /></div>
+      <div class="icon ground"><img src="img/icons/ground.svg" alt="Ground" title="Ground" /></div>
+      <div class="icon ice"><img src="img/icons/ice.svg" alt="Ice" title="Ice" /></div>
+      <div class="icon normal"><img src="img/icons/normal.svg" alt="Normal" title="Normal" /></div>
+      <div class="icon poison"><img src="img/icons/poison.svg" alt="Poison" title="Poison" /></div>
+      <div class="icon psychic"><img src="img/icons/psychic.svg" alt="Psychic" title="Psychic" /></div>
+      <div class="icon rock"><img src="img/icons/rock.svg" alt="Rock" title="Rock" /></div>
+      <div class="icon steel"><img src="img/icons/steel.svg" alt="Steel" title="Steel" /></div>
+      <div class="icon water"><img src="img/icons/water.svg" alt="Water" title="Water" /></div>
+    </div>
+    <h2 class="text-xl font-bold mb-4">Filtrar por estadísticas</h2>
+    <div class="mb-4">
+      <label for="vida" class="block text-sm font-bold mb-1">Vida</label>
+      <input type="range" id="vida" name="vida" min="0" max="100" value="50" class="w-full" />
+    </div>
+    <div class="mb-4">
+      <label for="ataque" class="block text-sm font-bold mb-1">Ataque</label>
+      <input type="range" id="ataque" name="ataque" min="0" max="100" value="50" class="w-full" />
+    </div>
+    <div class="mb-4">
+      <label for="defensa" class="block text-sm font-bold mb-1">Defensa</label>
+      <input type="range" id="defensa" name="defensa" min="0" max="100" value="50" class="w-full" />
+    </div>
+    <div class="mb-6">
+      <label for="ataqueEsp" class="block text-sm font-bold mb-1">Ataque Esp.</label>
+      <input type="range" id="ataqueEsp" name="ataqueEsp" min="0" max="100" value="50" class="w-full" />
+    </div>
+    <button class="bg-blue-500 text-white py-2 px-4 rounded w-full">Búsqueda avanzada</button>
+  </aside>
+
+  <!-- Modal para mostrar la carta seleccionada -->
+  <div id="modal" class="modal hidden">
+    <div class="modal-content"></div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="api.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>

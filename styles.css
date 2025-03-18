@@ -1,0 +1,225 @@
+/* Global styles */
+body {
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "Roboto",
+      "Oxygen", "Ubuntu", "Cantarell", "Fira Sans", "Droid Sans",
+      "Helvetica Neue", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    font-size: 1rem;
+    background: #effdff;
+  }
+  
+  /* Modal styles */
+  .modal {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 100;
+  }
+  .modal-content {
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+    width: 25%;
+    min-height: 60%;
+    display: flex;
+    flex-direction: column;
+  }
+  /* Nueva área para el contenido del modal, con scroll si es necesario */
+  .modal-body {
+    flex: 1;
+    overflow: auto;
+    padding: 1rem;
+  }
+  
+  /* Utility class para ocultar elementos */
+  .hidden {
+    display: none;
+  }
+  
+  /* Efecto hover para las cartas */
+  .pokemon-card {
+    transition: transform 0.2s ease;
+    cursor: pointer;
+  }
+  .pokemon-card:hover {
+    transform: scale(1.05);
+    z-index: 10;
+  }
+  
+  /* Estilos para el carrusel */
+  .carousel {
+    position: relative;
+    width: 100%;
+    height: 10rem;
+    margin-bottom: 1rem;
+  }
+  .carousel-images {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
+  .carousel-image {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    transition: opacity 0.3s ease;
+  }
+  .carousel-prev,
+  .carousel-next {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    background: rgba(255, 255, 255, 0.8);
+    border: none;
+    cursor: pointer;
+    padding: 0.5rem;
+    border-radius: 50%;
+    z-index: 5;
+  }
+  .carousel-prev {
+    left: 0.5rem;
+  }
+  .carousel-next {
+    right: 0.5rem;
+  }
+  
+  /* Estilos para los iconos de elementos */
+  .icon {
+    border-radius: 100%;
+    height: 60px;
+    width: 60px;
+    margin: auto;
+    transition: 200ms all;
+  }
+  .icon:hover {
+    filter: saturate(200%);
+    transform: scale(1.1);
+    cursor: pointer;
+  }
+  .icon img {
+    height: 60%;
+    width: 60%;
+    margin: 20%;
+  }
+  .icon.selected {
+    outline: 3px solid #333;
+  }
+  
+  /* Colores y sombras para cada tipo */
+  .bug { background: #92BC2C; box-shadow: 0 0 20px #92BC2C; }
+  .dark { background: #595761; box-shadow: 0 0 20px #595761; }
+  .dragon { background: #0C69C8; box-shadow: 0 0 20px #0C69C8; }
+  .electric { background: #F2D94E; box-shadow: 0 0 20px #F2D94E; }
+  .fairy { background: #EE90E6; box-shadow: 0 0 20px #EE90E6; }
+  .fighting { background: #D3425F; box-shadow: 0 0 20px #D3425F; }
+  .fire { background: #FBA54C; box-shadow: 0 0 20px #FBA54C; }
+  .flying { background: #A1BBEC; box-shadow: 0 0 20px #A1BBEC; }
+  .ghost { background: #5F6DBC; box-shadow: 0 0 20px #5F6DBC; }
+  .grass { background: #5FBD58; box-shadow: 0 0 20px #5FBD58; }
+  .ground { background: #DA7C4D; box-shadow: 0 0 20px #DA7C4D; }
+  .ice { background: #75D0C1; box-shadow: 0 0 20px #75D0C1; }
+  .normal { background: #A0A29F; box-shadow: 0 0 20px #A0A29F; }
+  .poison { background: #B763CF; box-shadow: 0 0 20px #B763CF; }
+  .psychic { background: #FA8581; box-shadow: 0 0 20px #FA8581; }
+  .rock { background: #C9BB8A; box-shadow: 0 0 20px #C9BB8A; }
+  .steel { background: #5695A3; box-shadow: 0 0 20px #5695A3; }
+  .water { background: #539DDF; box-shadow: 0 0 20px #539DDF; }
+  
+  /* Estilos para el flip (modal) */
+  .flip-container {
+    perspective: 1000px;
+    width: 100%;
+  }
+  .flip-card {
+    position: relative;
+    width: 100%;
+    transform-style: preserve-3d;
+    transition: transform 0.6s;
+  }
+  .flip-card.flipped {
+    transform: rotateY(180deg);
+  }
+  .flip-card-side {
+    position: absolute;
+    width: 100%;
+    backface-visibility: hidden;
+    -webkit-backface-visibility: hidden;
+  }
+ 
+  .flip-card-back {
+    transform: rotateY(180deg);
+    padding: 1rem;
+    background: #f9f9f9;
+  }
+  
+  /* Botón de voltear ubicado en la parte inferior del modal */
+  .flip-button {
+    padding: 0.5rem 1rem;
+    background: #333;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-top: 1rem;
+    align-self: center;
+  }
+  
+  /* Clase para agrandar la carta en el modal y al voltear (escala 1.5) */
+  .modal-card {
+    transform: scale(1.5);
+    transform-origin: center center;
+  }
+  
+  /* Estilos adicionales para el backside del modal */
+  
+  /* Barra de peso */
+  .weight-bar {
+    width: 100%;
+    background: #ddd;
+    border-radius: 4px;
+    overflow: hidden;
+    margin: 0.5rem 0;
+  }
+  .weight-fill {
+    height: 1rem;
+    background: #4caf50;
+    width: 0%; /* Se asignará dinámicamente según el peso */
+  }
+  
+  /* Lista de habilidades con viñetas */
+  .abilities-list {
+    list-style-type: disc;
+    padding-left: 1.5rem;
+    margin: 0.5rem 0;
+  }
+  
+  /* Iconos de efectividad: más pequeños */
+  .type-icon {
+    width: 30px;
+    height: 30px;
+    margin: 0.2rem;
+  }
+  
+  /* Estilos para la tabla de efectividad */
+  .type-table {
+    border-collapse: separate;
+    border-spacing: 1rem; /* Mayor separación entre celdas */
+    width: 100%;
+    margin-top: 0.5rem;
+  }
+  .type-table th,
+  .type-table td {
+    text-align: center;
+    vertical-align: middle;
+    padding: 0.5rem;
+  }
+  
