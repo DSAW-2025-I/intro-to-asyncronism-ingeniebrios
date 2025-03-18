@@ -223,3 +223,10 @@ body {
     padding: 0.5rem;
   }
   
+  /* Asegurar que los iconos estén centrados dentro de la celda */
+  .type-table .icon {
+    display: flex;
+    padding: 2px;
+    margin: 1rem auto;
+  }
+    
