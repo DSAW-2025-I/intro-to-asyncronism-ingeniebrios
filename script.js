@@ -213,3 +213,96 @@ document.getElementById('modal').addEventListener('click', function(e) {
 function toggleSidebar() {
   document.getElementById('sidebar').classList.toggle('hidden');
 }
+
+// Función de búsqueda por escrito
+document.getElementById('searchInput').addEventListener('input', function () {
+  let searchTerm = this.value.toLowerCase();
+  let pokemonCards = document.querySelectorAll('.pokemon-card');
+
+  pokemonCards.forEach(card => {
+      let pokemonName = card.querySelector('h2').textContent.toLowerCase();
+      if (pokemonName.includes(searchTerm)) {
+          card.style.display = 'block';
+      } else {
+          card.style.display = 'none';
+      }
+  });
+});
+
+// Función de búsqueda por filtros
+document.addEventListener("DOMContentLoaded", function () {
+  const searchInput = document.getElementById('searchInput');
+  const sortSelect = document.getElementById('sortSelect');
+  const pokemonGrid = document.getElementById('pokemonGrid');
+  const typeIcons = document.querySelectorAll('aside .icon');
+
+   // Almacenar el tipo seleccionado
+  let selectedType = null;
+
+  function filterAndSortPokemon() {
+      let searchTerm = searchInput.value.toLowerCase();
+      let pokemonCards = Array.from(document.querySelectorAll('.pokemon-card'));
+
+      // Filtrar por nombre y tipo
+      pokemonCards.forEach(card => {
+          let pokemonName = card.querySelector('h2').textContent.toLowerCase();
+          let pokemonTypes = JSON.parse(card.dataset.types); // Obtener los tipos
+
+          let matchesSearch = pokemonName.includes(searchTerm);
+          let matchesType = selectedType ? pokemonTypes.includes(selectedType) : true;
+
+          if (matchesSearch && matchesType) {
+              card.style.display = 'block';
+          } else {
+              card.style.display = 'none';
+          }
+      });
+
+      // Ordenar Pokémones según la opción seleccionada
+      let sortValue = sortSelect.value;
+      if (sortValue === 'id') {
+          // Ordenar por ID
+          pokemonCards.sort((a, b) => {
+              let idA = parseInt(a.querySelector('.text-sm').textContent.replace('#', ''));
+              let idB = parseInt(b.querySelector('.text-sm').textContent.replace('#', ''));
+              return idA - idB;
+          });
+      } else if (sortValue === 'name') {
+          pokemonCards.sort((a, b) => {
+              let nameA = a.querySelector('h2').textContent.toLowerCase();
+              let nameB = b.querySelector('h2').textContent.toLowerCase();
+              return nameA.localeCompare(nameB);
+          });
+      } else if (sortValue === 'type') {
+          pokemonCards.sort((a, b) => {
+              let typeA = JSON.parse(a.dataset.types)[0]; // Ordenar por primer tipo
+              let typeB = JSON.parse(b.dataset.types)[0];
+              return typeA.localeCompare(typeB);
+          });
+      }
+
+      // Reordenar los Pokémones en el grid
+      pokemonCards.forEach(card => pokemonGrid.appendChild(card));
+  }
+
+  // Buscar
+  searchInput.addEventListener('input', filterAndSortPokemon);
+
+  // Ordenar
+  sortSelect.addEventListener('change', filterAndSortPokemon);
+
+  // Seleccionar un tipo de Pokémon
+  typeIcons.forEach(icon => {
+      icon.addEventListener('click', function () {
+          // Obtener el tipo seleccionado
+          selectedType = icon.classList[1]; // La segunda clase es el tipo de Pokémon
+
+          // Alternar selección visual
+          typeIcons.forEach(i => i.classList.remove('selected'));
+          icon.classList.add('selected');
+
+          // Aplicar filtro
+          filterAndSortPokemon();
+      });
+  });
+});

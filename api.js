@@ -25,19 +25,26 @@ const typeColors = {
 
 function loadPokemon() {
   fetch(`https://pokeapi.co/api/v2/pokemon?limit=${limit}&offset=${offset}`)
-    .then(response => response.json())
-    .then(data => {
-      data.results.forEach(pokemon => {
-        fetch(pokemon.url)
-          .then(response => response.json())
-          .then(details => {
-            createPokemonCard(details);
-          });
-      });
-      offset += limit;
-    })
-    .catch(error => console.error('Error al obtener los Pokémon:', error));
+      .then(response => response.json())
+      .then(data => {
+          let pokemonPromises = data.results.map(pokemon =>
+              fetch(pokemon.url).then(response => response.json())
+          );
+
+          Promise.all(pokemonPromises)
+              .then(pokemonList => {
+                  // Ordenar Pokémon por su ID antes de cargarlos
+                  pokemonList.sort((a, b) => a.id - b.id);
+                  
+                  // Mostrar las tarjetas en orden numérico
+                  pokemonList.forEach(pokemon => createPokemonCard(pokemon));
+              });
+          
+          offset += limit;
+      })
+      .catch(error => console.error('Error al obtener los Pokémon:', error));
 }
+
 
 function createPokemonCard(pokemon) {
   const name = pokemon.name;
