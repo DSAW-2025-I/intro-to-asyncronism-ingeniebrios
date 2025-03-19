@@ -8,38 +8,72 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <!-- Archivo de estilos personalizados -->
   <link rel="stylesheet" href="styles.css" />
+  <link rel="icon" type="image/png" href="img/icons/pokemon.png">
 </head>
-<link rel="icon" type="image/png" href="img/icons/pokemon.png">
 <body class="bg-gray-100 m-0 relative">
+  <!-- Enlace para saltar al contenido (skip link) -->
+  <a href="#main" class="skip-link">Saltar al contenido</a>
+  
   <!-- Encabezado superior -->
-  <header class="bg-white shadow p-4 flex items-center justify-between">
+  <header class="bg-white shadow p-2 sm:p-4 flex items-center justify-between" role="banner">
+    <!-- Izquierda: Botón de menú -->
     <div class="flex items-center">
-      <button onclick="toggleSidebar()" class="mr-4 text-2xl focus:outline-none">☰</button>
-      <span class="font-bold">Menu Principal</span>
+      <button onclick="toggleSidebar()" class="mr-2 text-xl sm:text-2xl focus:outline-none" aria-label="Abrir menú">☰</button>
     </div>
-    <h1 class="text-2xl font-bold">PokeCards</h1>
-    <div class="flex items-center space-x-4">
-      <input type="text" placeholder="Buscar..." id="searchInput" class="border border-gray-300 rounded px-2 py-1 w-64" />
-      <select id="sortSelect" class="border border-gray-300 rounded px-2 py-1">
-        <option value=" "disabled selected>Ordenar por</option>
-        <option value="name">Nombre</option>
-        <option value="type">Tipo</option>
-        <option value="id">Normal</option>
-      </select>
+
+    <!-- Centro: Imagen y textos (se oculta la imagen en móvil) -->
+    <div class="relative inline-block hidden sm:block">
+      <img src="img/icons/pokemon.png" alt="Pokeball" class="w-24 h-24 sm:w-32 sm:h-32" />
+      <span class="absolute top-4 left-1/2 transform -translate-x-1/2 text-white font-bold text-xl sm:text-3xl">
+        Poke
+      </span>
+      <span class="absolute bottom-4 left-1/2 transform -translate-x-1/2 text-black font-bold text-xl sm:text-3xl">
+        Card
+      </span>
+    </div>
+
+    <!-- Derecha: Inputs y botones (tamaños reducidos en móvil) -->
+    <div class="flex flex-col space-y-1 sm:space-y-2 items-end">
+      <div class="flex space-x-2">
+        <label class="flex items-center">
+          <input type="radio" name="searchOption" value="name" checked class="mr-1 hidden">
+        </label>
+      </div>
+      <div class="flex space-x-2 items-center">
+        <input type="text" placeholder="Buscar por # o Nombre" id="searchInput" class="border border-gray-300 rounded px-2 py-1 text-sm sm:text-base" aria-label="Buscar Pokémon" />
+        <select id="sortSelect" class="border border-gray-300 rounded px-2 py-1 text-sm sm:text-base" aria-label="Ordenar por">
+          <option value="" disabled selected>Ordenar por</option>
+          <option value="name">Nombre</option>
+          <option value="type">Tipo</option>
+          <option value="id">Normal</option>
+        </select>
+        <button onclick="location.reload()" class="bg-blue-500 text-white py-1 px-2 rounded text-sm sm:text-base focus:outline-none" aria-label="Regresar al Inicio">
+          Regresar al Inicio
+        </button>
+      </div>
     </div>
   </header>
 
   <!-- Contenido principal -->
-  <main class="p-4">
-    <div id="pokemonGrid" class="grid grid-cols-4 gap-4 max-w-screen-xl mx-auto"></div>
+  <main id="main" class="p-4">
+    <!-- Grilla responsive: 1 columna en móvil, 2 en sm, 3 en md y 4 en lg -->
+    <div id="pokemonGrid" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 max-w-screen-xl mx-auto"></div>
+    <!-- Contenedor del spinner (inicialmente oculto) -->
+    <div id="loadingContainer" class="flex justify-center items-center mt-4 hidden">
+      <div class="spinner"></div>
+      <span class="ml-2">Cargando...</span>
+    </div>
     <div class="flex justify-center mt-4">
-      <button id="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded">Cargar más</button>
+      <button id="loadMore" class="bg-blue-500 text-white py-2 px-4 rounded focus:outline-none" aria-label="Cargar más">
+        Cargar más
+      </button>
     </div>
   </main>
 
   <!-- Sidebar -->
-  <aside id="sidebar" class="fixed top-0 left-0 w-80 h-full bg-gray-300 p-4 hidden z-50 overflow-y-auto">
-    <button onclick="toggleSidebar()" class="text-2xl mb-4 focus:outline-none">&times;</button>
+  <aside id="sidebar" class="fixed top-0 left-0 w-80 h-full bg-gray-300 p-4 hidden z-50 overflow-y-auto" role="complementary" aria-label="Opciones de filtrado">
+    <button onclick="toggleSidebar()" class="text-2xl mb-4 focus:outline-none" aria-label="Cerrar menú">&times;</button>
+    
     <h2 class="text-xl font-bold mb-4">Elementos</h2>
     <div class="grid grid-cols-3 gap-4 mb-6">
       <div class="icon bug"><img src="img/icons/bug.svg" alt="Bug" title="Bug" /></div>
@@ -61,28 +95,42 @@
       <div class="icon steel"><img src="img/icons/steel.svg" alt="Steel" title="Steel" /></div>
       <div class="icon water"><img src="img/icons/water.svg" alt="Water" title="Water" /></div>
     </div>
+    
     <h2 class="text-xl font-bold mb-4">Filtrar por estadísticas</h2>
     <div class="mb-4">
-      <label for="vida" class="block text-sm font-bold mb-1">Vida</label>
-      <input type="range" id="vida" name="vida" min="0" max="100" value="50" class="w-full" />
+      <label class="block text-sm font-bold mb-1" for="vidaMin">Vida</label>
+      <div class="flex space-x-2">
+        <input type="number" id="vidaMin" name="vidaMin" class="w-1/2 border border-gray-300 rounded px-2 py-1" min="1" max="255" value="1" />
+        <input type="number" id="vidaMax" name="vidaMax" class="w-1/2 border border-gray-300 rounded px-2 py-1" min="1" max="255" value="255" />
+      </div>
     </div>
     <div class="mb-4">
-      <label for="ataque" class="block text-sm font-bold mb-1">Ataque</label>
-      <input type="range" id="ataque" name="ataque" min="0" max="100" value="50" class="w-full" />
+      <label class="block text-sm font-bold mb-1" for="ataqueMin">Ataque</label>
+      <div class="flex space-x-2">
+        <input type="number" id="ataqueMin" name="ataqueMin" class="w-1/2 border border-gray-300 rounded px-2 py-1" min="5" max="200" value="5" />
+        <input type="number" id="ataqueMax" name="ataqueMax" class="w-1/2 border border-gray-300 rounded px-2 py-1" min="5" max="200" value="200" />
+      </div>
     </div>
     <div class="mb-4">
-      <label for="defensa" class="block text-sm font-bold mb-1">Defensa</label>
-      <input type="range" id="defensa" name="defensa" min="0" max="100" value="50" class="w-full" />
+      <label class="block text-sm font-bold mb-1" for="defensaMin">Defensa</label>
+      <div class="flex space-x-2">
+        <input type="number" id="defensaMin" name="defensaMin" class="w-1/2 border border-gray-300 rounded px-2 py-1" min="5" max="200" value="5" />
+        <input type="number" id="defensaMax" name="defensaMax" class="w-1/2 border border-gray-300 rounded px-2 py-1" min="5" max="200" value="200" />
+      </div>
     </div>
     <div class="mb-6">
-      <label for="ataqueEsp" class="block text-sm font-bold mb-1">Ataque Esp.</label>
-      <input type="range" id="ataqueEsp" name="ataqueEsp" min="0" max="100" value="50" class="w-full" />
+      <label class="block text-sm font-bold mb-1" for="ataqueEspMin">Ataque Esp.</label>
+      <div class="flex space-x-2">
+        <input type="number" id="ataqueEspMin" name="ataqueEspMin" class="w-1/2 border border-gray-300 rounded px-2 py-1" min="5" max="200" value="5" />
+        <input type="number" id="ataqueEspMax" name="ataqueEspMax" class="w-1/2 border border-gray-300 rounded px-2 py-1" min="5" max="200" value="200" />
+      </div>
     </div>
-    <button class="bg-blue-500 text-white py-2 px-4 rounded w-full">Búsqueda avanzada</button>
+    
+    <button id="advancedSearchButton" class="bg-blue-500 text-white py-2 px-4 rounded w-full focus:outline-none">Búsqueda avanzada</button>
   </aside>
 
   <!-- Modal para mostrar la carta seleccionada -->
-  <div id="modal" class="modal hidden">
+  <div id="modal" class="modal hidden" role="dialog" aria-modal="true">
     <div class="modal-content"></div>
   </div>
 

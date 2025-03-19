@@ -1,45 +1,79 @@
-/* ===== Lógica de selección de iconos (máximo 2 seleccionados) ===== */
-let selectedIcons = [];
-const iconElements = document.querySelectorAll('aside .icon');
+/* ===== Funciones de utilidad para el spinner ===== */
+function showLoading() {
+  const loadingContainer = document.getElementById("loadingContainer");
+  if (loadingContainer) {
+    loadingContainer.classList.remove("hidden");
+  }
+}
 
+function hideLoading() {
+  const loadingContainer = document.getElementById("loadingContainer");
+  if (loadingContainer) {
+    loadingContainer.classList.add("hidden");
+  }
+}
+
+/* ===========================================================
+   Funciones para habilitar/deshabilitar el botón "Cargar más"
+   =========================================================== */
+function disableLoadMore() {
+  const loadMoreBtn = document.getElementById("loadMore");
+  if (loadMoreBtn) {
+    loadMoreBtn.classList.add("hidden");
+  }
+}
+
+function enableLoadMore() {
+  const loadMoreBtn = document.getElementById("loadMore");
+  if (loadMoreBtn) {
+    loadMoreBtn.classList.remove("hidden");
+  }
+}
+
+/* ===========================================================
+   Lógica para seleccionar iconos de tipo (hasta 2 máximo)
+   =========================================================== */
+let selectedIcons = []; // Guardamos hasta 2 iconos seleccionados
+
+const iconElements = document.querySelectorAll("aside .icon");
 iconElements.forEach(icon => {
-  icon.addEventListener('click', () => {
-    if (icon.classList.contains('selected')) {
-      icon.classList.remove('selected');
+  icon.addEventListener("click", () => {
+    if (icon.classList.contains("selected")) {
+      icon.classList.remove("selected");
       selectedIcons = selectedIcons.filter(el => el !== icon);
     } else {
-      if (selectedIcons.length >= 2) {
-        const firstIcon = selectedIcons.shift();
-        if (firstIcon) {
-          firstIcon.classList.remove('selected');
-        }
+      if (selectedIcons.length === 2) {
+        selectedIcons[0].classList.remove("selected");
+        selectedIcons.shift();
       }
-      icon.classList.add('selected');
+      icon.classList.add("selected");
       selectedIcons.push(icon);
     }
   });
 });
 
-/* ===== Función para inicializar el carrusel ===== */
+/* ===========================================================
+   Función para inicializar el carrusel
+   =========================================================== */
 function initCarousel(carousel) {
   let currentSlide = 0;
-  const carouselImages = carousel.querySelector('.carousel-images');
-  const imgs = carouselImages.querySelectorAll('.carousel-image');
-  const prevButton = carousel.querySelector('.carousel-prev');
-  const nextButton = carousel.querySelector('.carousel-next');
+  const carouselImages = carousel.querySelector(".carousel-images");
+  const imgs = carouselImages.querySelectorAll(".carousel-image");
+  const prevButton = carousel.querySelector(".carousel-prev");
+  const nextButton = carousel.querySelector(".carousel-next");
 
   imgs.forEach((img, index) => {
     img.style.opacity = index === 0 ? 1 : 0;
   });
 
-  prevButton.addEventListener('click', function(e) {
+  prevButton.addEventListener("click", function(e) {
     e.stopPropagation();
     imgs[currentSlide].style.opacity = 0;
     currentSlide = (currentSlide - 1 + imgs.length) % imgs.length;
     imgs[currentSlide].style.opacity = 1;
   });
 
-  nextButton.addEventListener('click', function(e) {
+  nextButton.addEventListener("click", function(e) {
     e.stopPropagation();
     imgs[currentSlide].style.opacity = 0;
     currentSlide = (currentSlide + 1) % imgs.length;
@@ -47,48 +81,43 @@ function initCarousel(carousel) {
   });
 }
 
-/* ===== Lógica para el Modal con Flip ===== */
+/* ===========================================================
+   Lógica para el modal con flip
+   =========================================================== */
 function openModal(card) {
-  const modal = document.getElementById('modal');
-  const modalContent = modal.querySelector('.modal-content');
-  modalContent.innerHTML = ''; // Limpia contenido previo
+  const modal = document.getElementById("modal");
+  const modalContent = modal.querySelector(".modal-content");
+  modalContent.innerHTML = "";
 
-  // Crear contenedor para el contenido scrollable
-  const modalBody = document.createElement('div');
+  const modalBody = document.createElement("div");
   modalBody.className = "modal-body";
-
-  // Contenedor flip
-  const flipContainer = document.createElement('div');
+  const flipContainer = document.createElement("div");
   flipContainer.className = "flip-container";
-  const flipCard = document.createElement('div');
+  const flipCard = document.createElement("div");
   flipCard.className = "flip-card";
 
-  // Cara frontal: clonar la carta original
-  const frontSide = document.createElement('div');
+  const frontSide = document.createElement("div");
   frontSide.className = "flip-card-side flip-card-front";
   const frontClone = card.cloneNode(true);
-  frontClone.style.transform = 'none';
+  frontClone.style.transform = "none";
   frontSide.appendChild(frontClone);
 
-  // Cara trasera: contenido de detalles
-  const backSide = document.createElement('div');
+  const backSide = document.createElement("div");
   backSide.className = "flip-card-side flip-card-back";
-  // Recuperar datos desde data-attributes
   const weight = parseInt(card.dataset.weight) || 0;
   const weightKg = weight / 10;
   const percentage = Math.min((weightKg / 100) * 100, 100);
   const abilities = JSON.parse(card.dataset.abilities || "[]");
   const types = JSON.parse(card.dataset.types || "[]");
 
-  // Crear efectividad (tabla con iconos)
-  const effectivenessTable = document.createElement('table');
+  const effectivenessTable = document.createElement("table");
   effectivenessTable.className = "type-table";
-  const headerRow = document.createElement('tr');
+  const headerRow = document.createElement("tr");
   headerRow.innerHTML = "<th>Gana a</th><th>Pierde contra</th>";
   effectivenessTable.appendChild(headerRow);
-  const dataRow = document.createElement('tr');
-  const tdWins = document.createElement('td');
-  const tdLoses = document.createElement('td');
+  const dataRow = document.createElement("tr");
+  const tdWins = document.createElement("td");
+  const tdLoses = document.createElement("td");
   dataRow.appendChild(tdWins);
   dataRow.appendChild(tdLoses);
   effectivenessTable.appendChild(dataRow);
@@ -99,23 +128,23 @@ function openModal(card) {
       .then(data => {
         const wins = data.damage_relations.double_damage_to.map(item => item.name);
         const loses = data.damage_relations.double_damage_from.map(item => item.name);
-        
+
         wins.forEach(t => {
-          const iconContainer = document.createElement('div');
+          const iconContainer = document.createElement("div");
           iconContainer.className = `icon ${t}`;
-          const img = document.createElement('img');
-          img.className = 'type-icon';
+          const img = document.createElement("img");
+          img.className = "type-icon";
           img.src = `img/icons/${t}.svg`;
           img.alt = t;
           iconContainer.appendChild(img);
           tdWins.appendChild(iconContainer);
         });
-        
+
         loses.forEach(t => {
-          const iconContainer = document.createElement('div');
+          const iconContainer = document.createElement("div");
           iconContainer.className = `icon ${t}`;
-          const img = document.createElement('img');
-          img.className = 'type-icon';
+          const img = document.createElement("img");
+          img.className = "type-icon";
           img.src = `img/icons/${t}.svg`;
           img.alt = t;
           iconContainer.appendChild(img);
@@ -131,178 +160,251 @@ function openModal(card) {
     tdLoses.textContent = "N/A";
   }
 
-  // Construir el contenido del backside
-  const detailsContainer = document.createElement('div');
+  const detailsContainer = document.createElement("div");
   detailsContainer.innerHTML = `<h2 class="text-2xl font-bold mb-2">Detalles</h2>`;
-  
-  // Peso con barra
   detailsContainer.innerHTML += `<p><strong>Peso:</strong> ${weightKg.toFixed(1)} kg</p>`;
-  const weightBarContainer = document.createElement('div');
-  weightBarContainer.className = 'weight-bar';
-  const weightFill = document.createElement('div');
-  weightFill.className = 'weight-fill';
-  weightFill.style.width = percentage + '%';
+  const weightBarContainer = document.createElement("div");
+  weightBarContainer.className = "weight-bar";
+  const weightFill = document.createElement("div");
+  weightFill.className = "weight-fill";
+  weightFill.style.width = percentage + "%";
   weightBarContainer.appendChild(weightFill);
   detailsContainer.appendChild(weightBarContainer);
-  
-  // Lista de habilidades (hasta 3)
   detailsContainer.innerHTML += `<p><strong>Habilidades:</strong></p>`;
-  const abilitiesList = document.createElement('ul');
-  abilitiesList.className = 'abilities-list';
+  const abilitiesList = document.createElement("ul");
+  abilitiesList.className = "abilities-list";
   abilities.slice(0, 3).forEach(ab => {
-    const li = document.createElement('li');
+    const li = document.createElement("li");
     li.textContent = ab;
     abilitiesList.appendChild(li);
   });
   detailsContainer.appendChild(abilitiesList);
-  
-  // Efectividad (tabla con iconos)
   detailsContainer.innerHTML += `<p><strong>Efectividad:</strong></p>`;
   detailsContainer.appendChild(effectivenessTable);
-  
   backSide.appendChild(detailsContainer);
 
-  // Armar el flip card
   flipCard.appendChild(frontSide);
   flipCard.appendChild(backSide);
   flipContainer.appendChild(flipCard);
-
-  // Agregar flipContainer al modalBody
   modalBody.appendChild(flipContainer);
   modalContent.appendChild(modalBody);
 
-  // Botón de voltear ubicado en la parte inferior (fuera de modalBody para que siempre se vea)
-  const flipButton = document.createElement('button');
+  const flipButton = document.createElement("button");
   flipButton.textContent = "Voltear";
   flipButton.className = "flip-button";
-  flipButton.addEventListener('click', function(e) {
+  flipButton.addEventListener("click", function(e) {
     e.stopPropagation();
-    flipCard.classList.toggle('flipped');
+    flipCard.classList.toggle("flipped");
   });
   modalContent.appendChild(flipButton);
 
-  // Re-inicializar el carrusel si existe en la cara frontal
-  const modalCarousel = modalContent.querySelector('.carousel');
+  const modalCarousel = modalContent.querySelector(".carousel");
   if (modalCarousel && typeof initCarousel === "function") {
     initCarousel(modalCarousel);
   }
 
-  modal.classList.remove('hidden');
+  modal.classList.remove("hidden");
 }
 
 function closeModal() {
-  document.getElementById('modal').classList.add('hidden');
+  document.getElementById("modal").classList.add("hidden");
 }
 
-// Delegación de evento para abrir modal al hacer clic en una carta
-document.getElementById('pokemonGrid').addEventListener('click', function(e) {
-  const card = e.target.closest('.pokemon-card');
+// Delegación para abrir el modal al hacer clic en una carta
+document.getElementById("pokemonGrid").addEventListener("click", function(e) {
+  const card = e.target.closest(".pokemon-card");
   if (card) {
     openModal(card);
   }
 });
 
-// Cierra el modal si se hace clic fuera del contenido
-document.getElementById('modal').addEventListener('click', function(e) {
+// Cerrar modal al hacer clic fuera del contenido
+document.getElementById("modal").addEventListener("click", function(e) {
   if (e.target === this) {
     closeModal();
   }
 });
 
-/* ===== Función para alternar visibilidad del sidebar ===== */
+// Permitir cerrar el modal con la tecla Escape
+document.addEventListener("keydown", function(e) {
+  if (e.key === "Escape") {
+    closeModal();
+  }
+});
+
+/* ===== Función para alternar la visibilidad del sidebar ===== */
 function toggleSidebar() {
-  document.getElementById('sidebar').classList.toggle('hidden');
+  document.getElementById("sidebar").classList.toggle("hidden");
 }
 
-// Función de búsqueda por escrito
-document.getElementById('searchInput').addEventListener('input', function () {
-  let searchTerm = this.value.toLowerCase();
-  let pokemonCards = document.querySelectorAll('.pokemon-card');
-
-  pokemonCards.forEach(card => {
-      let pokemonName = card.querySelector('h2').textContent.toLowerCase();
-      if (pokemonName.includes(searchTerm)) {
-          card.style.display = 'block';
-      } else {
-          card.style.display = 'none';
-      }
-  });
-});
-
-// Función de búsqueda por filtros
+/* ===========================================================
+   Búsqueda por nombre / número (inmediata al escribir)
+   =========================================================== */
 document.addEventListener("DOMContentLoaded", function () {
-  const searchInput = document.getElementById('searchInput');
-  const sortSelect = document.getElementById('sortSelect');
-  const pokemonGrid = document.getElementById('pokemonGrid');
-  const typeIcons = document.querySelectorAll('aside .icon');
+  const searchInput = document.getElementById("searchInput");
+  const sortSelect = document.getElementById("sortSelect");
+  const pokemonGrid = document.getElementById("pokemonGrid");
 
-   // Almacenar el tipo seleccionado
-  let selectedType = null;
+  let previousSearchTerm = "";
 
-  function filterAndSortPokemon() {
-      let searchTerm = searchInput.value.toLowerCase();
-      let pokemonCards = Array.from(document.querySelectorAll('.pokemon-card'));
+  function executeSearch() {
+    showLoading();
+    pokemonGrid.innerHTML = "";
+    const selectedOption = document.querySelector('input[name="searchOption"]:checked').value;
+    const term = searchInput.value.trim();
 
-      // Filtrar por nombre y tipo
-      pokemonCards.forEach(card => {
-          let pokemonName = card.querySelector('h2').textContent.toLowerCase();
-          let pokemonTypes = JSON.parse(card.dataset.types); // Obtener los tipos
+    if (!term) {
+      enableLoadMore();
+      hideLoading();
+      return;
+    } else {
+      disableLoadMore();
+    }
 
-          let matchesSearch = pokemonName.includes(searchTerm);
-          let matchesType = selectedType ? pokemonTypes.includes(selectedType) : true;
+    previousSearchTerm = term;
+    let url;
+    if (selectedOption === "name") {
+      url = `https://pokeapi.co/api/v2/pokemon/${term.toLowerCase()}`;
+    } else {
+      url = `https://pokeapi.co/api/v2/pokemon/${term}`;
+    }
 
-          if (matchesSearch && matchesType) {
-              card.style.display = 'block';
-          } else {
-              card.style.display = 'none';
-          }
+    fetch(url)
+      .then(res => {
+        if (!res.ok) throw new Error("Pokémon no encontrado");
+        return res.json();
+      })
+      .then(poke => {
+        createPokemonCard(poke);
+        hideLoading();
+      })
+      .catch(err => {
+        console.error(err);
+        pokemonGrid.innerHTML = "<div class='text-center text-2xl mt-8'>No se encontró Pokémon</div>";
+        hideLoading();
       });
-
-      // Ordenar Pokémones según la opción seleccionada
-      let sortValue = sortSelect.value;
-      if (sortValue === 'id') {
-          // Ordenar por ID
-          pokemonCards.sort((a, b) => {
-              let idA = parseInt(a.querySelector('.text-sm').textContent.replace('#', ''));
-              let idB = parseInt(b.querySelector('.text-sm').textContent.replace('#', ''));
-              return idA - idB;
-          });
-      } else if (sortValue === 'name') {
-          pokemonCards.sort((a, b) => {
-              let nameA = a.querySelector('h2').textContent.toLowerCase();
-              let nameB = b.querySelector('h2').textContent.toLowerCase();
-              return nameA.localeCompare(nameB);
-          });
-      } else if (sortValue === 'type') {
-          pokemonCards.sort((a, b) => {
-              let typeA = JSON.parse(a.dataset.types)[0]; // Ordenar por primer tipo
-              let typeB = JSON.parse(b.dataset.types)[0];
-              return typeA.localeCompare(typeB);
-          });
-      }
-
-      // Reordenar los Pokémones en el grid
-      pokemonCards.forEach(card => pokemonGrid.appendChild(card));
   }
 
-  // Buscar
-  searchInput.addEventListener('input', filterAndSortPokemon);
-
-  // Ordenar
-  sortSelect.addEventListener('change', filterAndSortPokemon);
-
-  // Seleccionar un tipo de Pokémon
-  typeIcons.forEach(icon => {
-      icon.addEventListener('click', function () {
-          // Obtener el tipo seleccionado
-          selectedType = icon.classList[1]; // La segunda clase es el tipo de Pokémon
-
-          // Alternar selección visual
-          typeIcons.forEach(i => i.classList.remove('selected'));
-          icon.classList.add('selected');
-
-          // Aplicar filtro
-          filterAndSortPokemon();
-      });
-  });
+  searchInput.addEventListener("input", executeSearch);
+  sortSelect.addEventListener("change", executeSearch);
 });
+
+/* ===========================================================
+   Función auxiliar para filtrar por estadísticas
+   =========================================================== */
+function filterByStats(pokemonList) {
+  const hpMin = Number(document.getElementById("vidaMin").value);
+  const hpMax = Number(document.getElementById("vidaMax").value);
+  const atkMin = Number(document.getElementById("ataqueMin").value);
+  const atkMax = Number(document.getElementById("ataqueMax").value);
+  const defMin = Number(document.getElementById("defensaMin").value);
+  const defMax = Number(document.getElementById("defensaMax").value);
+  const spaMin = Number(document.getElementById("ataqueEspMin").value);
+  const spaMax = Number(document.getElementById("ataqueEspMax").value);
+  
+  return pokemonList.filter(pokemon => {
+    const hp = pokemon.stats.find(s => s.stat.name === "hp")?.base_stat || 0;
+    const atk = pokemon.stats.find(s => s.stat.name === "attack")?.base_stat || 0;
+    const def = pokemon.stats.find(s => s.stat.name === "defense")?.base_stat || 0;
+    const spa = pokemon.stats.find(s => s.stat.name === "special-attack")?.base_stat || 0;
+    return (hp >= hpMin && hp <= hpMax &&
+            atk >= atkMin && atk <= atkMax &&
+            def >= defMin && def <= defMax &&
+            spa >= spaMin && spa <= spaMax);
+  });
+}
+
+/* ===========================================================
+   Búsqueda avanzada por tipos y estadísticas
+   =========================================================== */
+const advancedSearchBtn = document.getElementById("advancedSearchButton");
+if (advancedSearchBtn) {
+  advancedSearchBtn.addEventListener("click", executeAdvancedSearch);
+}
+
+function executeAdvancedSearch() {
+  // Cierra el sidebar al ejecutar la búsqueda avanzada
+  document.getElementById("sidebar").classList.add("hidden");
+
+  const pokemonGrid = document.getElementById("pokemonGrid");
+  showLoading();
+  pokemonGrid.innerHTML = "";
+  disableLoadMore();
+
+  const selectedTypes = selectedIcons.map(icon => icon.classList[1]);
+  if (selectedTypes.length === 0) {
+    hideLoading();
+    return;
+  }
+
+  function fetchTypeData(type) {
+    return fetch(`https://pokeapi.co/api/v2/type/${type}`)
+      .then(res => res.json())
+      .then(data => data.pokemon.map(item => item.pokemon))
+      .catch(err => {
+        console.error(err);
+        return [];
+      });
+  }
+
+  if (selectedTypes.length === 1) {
+    fetchTypeData(selectedTypes[0])
+      .then(pokemonEntries => {
+        if (pokemonEntries.length === 0) {
+          pokemonGrid.innerHTML = "<div class='text-center text-2xl mt-8'>No se encontró Pokémon</div>";
+          hideLoading();
+          return;
+        }
+        return Promise.all(pokemonEntries.map(entry =>
+          fetch(entry.url).then(res => res.json())
+        ));
+      })
+      .then(pokemonList => {
+        if (!pokemonList) return;
+        const filteredList = filterByStats(pokemonList);
+        if (filteredList.length === 0) {
+          pokemonGrid.innerHTML = "<div class='text-center text-2xl mt-8'>No se encontró Pokémon</div>";
+        } else {
+          filteredList.forEach(p => createPokemonCard(p));
+        }
+        hideLoading();
+      })
+      .catch(err => {
+        console.error(err);
+        pokemonGrid.innerHTML = "<div class='text-center text-2xl mt-8'>No se encontró Pokémon</div>";
+        hideLoading();
+      });
+  } else {
+    const [typeA, typeB] = selectedTypes;
+    Promise.all([ fetchTypeData(typeA), fetchTypeData(typeB) ])
+      .then(([dataA, dataB]) => {
+        const setA = new Set(dataA.map(p => p.name));
+        const intersectionNames = dataB
+          .filter(p => setA.has(p.name))
+          .map(p => p.name);
+        if (intersectionNames.length === 0) {
+          pokemonGrid.innerHTML = "<div class='text-center text-2xl mt-8'>No se encontró Pokémon</div>";
+          hideLoading();
+          return;
+        }
+        return Promise.all(intersectionNames.map(name =>
+          fetch(`https://pokeapi.co/api/v2/pokemon/${name}`).then(res => res.json())
+        ));
+      })
+      .then(pokemonList => {
+        if (!pokemonList) return;
+        const filteredList = filterByStats(pokemonList);
+        if (filteredList.length === 0) {
+          pokemonGrid.innerHTML = "<div class='text-center text-2xl mt-8'>No se encontró Pokémon</div>";
+        } else {
+          filteredList.forEach(p => createPokemonCard(p));
+        }
+        hideLoading();
+      })
+      .catch(err => {
+        console.error(err);
+        pokemonGrid.innerHTML = "<div class='text-center text-2xl mt-8'>No se encontró Pokémon</div>";
+        hideLoading();
+      });
+  }
+}
